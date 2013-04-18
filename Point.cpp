@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iostream>
 
+#define PI 3.1415926535897932384626433832795028831971 //less digit cause bugs when do comparison!!!!
+
 using namespace std;
 
 typedef vector<Point>::iterator Iterator;
@@ -12,18 +14,17 @@ struct SortByAngle
 
     bool operator()(Point p1, Point p2)
     {
-        double dx1 = p1.getX() - basePoint.getX();
-        double dx2 = p2.getX() - basePoint.getX();
-        double dy1 = p1.getY() - basePoint.getY();
-        double dy2 = p2.getY() - basePoint.getY();
-
-        if(dx1 == 0)
-            dy2 = abs(dy2);
-        if(dx2 == 0)
-            dy2 = abs(dy2);
+        int dx1 = p1.getX() - basePoint.getX();
+        int dx2 = p2.getX() - basePoint.getX();
+        int dy1 = p1.getY() - basePoint.getY();
+        int dy2 = p2.getY() - basePoint.getY();
 
         double angle1 = atan2(dx1, dy1);
         double angle2 = atan2(dx2, dy2);
+
+        if(angle1 < 0) angle1 += PI;
+        if(angle2 < 0) angle2 += PI;
+
         return (angle1 < angle2);
     }
     Point basePoint;
@@ -39,13 +40,13 @@ struct IsColinear
             return false;
 
         Iterator iter = result.begin();
-        double dx1 = iter->getX() - basePoint.getX();
-        double dy1 = iter->getY() - basePoint.getY();
+        int dx1 = iter->getX() - basePoint.getX();
+        int dy1 = iter->getY() - basePoint.getY();
 
         ++iter;
 
-        double dx2 = iter->getX() - basePoint.getX();
-        double dy2 = iter->getY() - basePoint.getY();
+        int dx2 = iter->getX() - basePoint.getX();
+        int dy2 = iter->getY() - basePoint.getY();
 
         long long xy1 = dx2 * dy1;
         long long xy2 = dx1 * dy2;
@@ -109,16 +110,21 @@ void Point::findCandidate(vector<Point>& input,
             newResult.push_back(*this);
             newResult.push_back(*iter1);
 
-            for(Iterator iter2 = iter1 + 1; iter2 != input.end(); ++iter2)
-                if((!sortByAngle(*iter1, *iter2)) && (!sortByAngle(*iter2, *iter1)))
-                {
+            for(Iterator iter2 = iter1 + 1; iter2 != input.end(); ++iter2) {
+
+                if((!sortByAngle(*iter1, *iter2)) && (!sortByAngle(*iter2, *iter1))) {
+
                     newResult.push_back(*iter2);
-                    ++iter1;
+                    iter1 = iter2;
+
                 }
-                else break;
+                else
+                    break;
+            }
 
             if(newResult.size() >= MIN_POINTS)
                 results.push_back(newResult);
         }
+
     }
 }
