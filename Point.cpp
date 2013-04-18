@@ -1,18 +1,79 @@
 #include "Point.h"
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-typedef vector<Point>::iterator iterator;
+typedef vector<Point>::iterator Iterator;
 
-Point::Point(int x, int y,
-      vector<Point>& input,
-      vector<vector<Point> >& results,
-      bool useBrute) : px(x), py(y)
+struct SortByAngle
 {
+    SortByAngle(Point p) : basePoint(p) {}
+
+    bool operator()(Point p1, Point p2)
+    {
+        double dx1 = p1.getX() - basePoint.getX();
+        double dx2 = p2.getX() - basePoint.getX();
+        double dy1 = p1.getY() - basePoint.getY();
+        double dy2 = p2.getY() - basePoint.getY();
+
+        if(dx1 == 0)
+            dy2 = abs(dy2);
+        if(dx2 == 0)
+            dy2 = abs(dy2);
+
+        double angle1 = atan2(dx1, dy1);
+        double angle2 = atan2(dx2, dy2);
+        return (angle1 < angle2);
+    }
+    Point basePoint;
+};
+
+struct IsColinear
+{
+    IsColinear(Point p) : basePoint(p) {}
+
+    bool operator()(vector<Point>& result)
+    {
+        if(result.size() < 2)
+            return false;
+
+        Iterator iter = result.begin();
+        double dx1 = iter->getX() - basePoint.getX();
+        double dy1 = iter->getY() - basePoint.getY();
+
+        ++iter;
+
+        double dx2 = iter->getX() - basePoint.getX();
+        double dy2 = iter->getY() - basePoint.getY();
+
+        long long xy1 = dx2 * dy1;
+        long long xy2 = dx1 * dy2;
+
+        if(xy1 == xy2) {
+            result.push_back(basePoint);
+            return true;
+        }
+        else return false;
+    }
+
+    Point basePoint;
+};
+
+void Point::findCandidate(vector<Point>& input,
+                          vector<vector<Point> >& results,
+                          bool useBrute)
+{
+    if(input.empty()) return;
+
+    IsColinear isColinear(*this);
+
+    for(vector<vector<Point> >::iterator iter = results.begin(); iter != results.end(); ++iter)
+        if(isColinear(*iter)) return;
+
     if(useBrute)
     {
-        for(iterator iter1 = input.begin(); iter1 != input.end(); ++iter1)
+        for(Iterator iter1 = input.begin(); iter1 != input.end(); ++iter1)
         {
             int dx1 = iter1->getX() - px;
             int dy1 = iter1->getY() - py;
@@ -21,7 +82,7 @@ Point::Point(int x, int y,
             newResult.push_back(*this);
             newResult.push_back(*iter1);
 
-            for(iterator iter2 = iter1++; iter2 != input.end(); ++iter2)
+            for(Iterator iter2 = iter1 + 1; iter2 != input.end(); ++iter2)
             {
                 int dx2 = iter2->getX() - px;
                 int dy2 = iter2->getY() - py;
@@ -37,23 +98,27 @@ Point::Point(int x, int y,
                 results.push_back(newResult);
         }
     }
-    else if(!useBrute)
+    else
     {
+        SortByAngle sortByAngle(*this);
         sort(input.begin(), input.end(), sortByAngle);
 
-        for(iterator itr1 = input.begin(); itr1 != input.end(); ++itr1)
+        for(Iterator iter1 = input.begin(); iter1 != input.end(); ++iter1)
         {
             vector<Point> newResult;
-            newResult.push_back(*itr1);
+            newResult.push_back(*this);
+            newResult.push_back(*iter1);
 
-            for(iterator itr2 = itr1++; itr2 != input.end(); ++itr2)
-                if(!sortByAngle(*itr1, *itr2) && !sortByAngle(*itr2, *itr1))
-                    newResult.push_back(*itr2);
+            for(Iterator iter2 = iter1 + 1; iter2 != input.end(); ++iter2)
+                if((!sortByAngle(*iter1, *iter2)) && (!sortByAngle(*iter2, *iter1)))
+                {
+                    newResult.push_back(*iter2);
+                    ++iter1;
+                }
+                else break;
+
+            if(newResult.size() >= MIN_POINTS)
+                results.push_back(newResult);
         }
-
-        if(newResult.size() >= MIN_POINTS)
-            results.push_back(newResult);
     }
-
-    input.push_back(*this);
 }

@@ -18,3 +18,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     Point.h
+
+OTHER_FILES += \
+    input6.txt
