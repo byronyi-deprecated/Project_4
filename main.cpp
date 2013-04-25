@@ -28,32 +28,38 @@ int main(int argc, char *argv[])
     //        return -1;
     //    }
 
-    ifstream file("input6.txt");
-    int num_input = 0;
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
-    if(!file.is_open())
-        return -1;;
+    return a.exec();
 
-    file >> num_input;
+//    ifstream file("input6.txt");
+//    int num_input = 0;
 
-    vector<Point> input;
-    vector<vector<Point> > results;
+//    if(!file.is_open())
+//        return -1;;
 
-    for(int i = 0; i != num_input; ++i)
-    {
-        if(file.eof())
-            return -1;
+//    file >> num_input;
 
-        int x, y;
-        file >> x >> y;
+//    vector<Point> input;
+//    vector<vector<Point> > results;
 
-        Point newPoint(x, y);
-        newPoint.findCandidate(input, results);
-        input.push_back(newPoint);
+//    for(int i = 0; i != num_input; ++i)
+//    {
+//        if(file.eof())
+//            return -1;
 
-    }
+//        int x, y;
+//        file >> x >> y;
 
-    for_each(results.begin(), results.end(), PrintResult);
+//        Point newPoint(x, y);
+//        newPoint.findCandidate(input, results);
+//        input.push_back(newPoint);
 
-    return 0;
+//    }
+
+//    for_each(results.begin(), results.end(), PrintResult);
+
+//    return 0;
 }

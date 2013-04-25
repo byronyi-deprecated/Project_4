@@ -14,7 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    Point.cpp
+    Point.cpp \
+    Brute.cpp \
+    Fast.cpp \
+    Utils.cpp
 
 HEADERS  += mainwindow.h \
     Point.h
