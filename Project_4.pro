@@ -12,11 +12,16 @@ TARGET = Project_4
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
+SOURCES +=\
         mainwindow.cpp \
-    Point.cpp
+    Point.cpp \
+    PointPlotter.cpp \
+    Fast.cpp \
+    Brute.cpp
 
 HEADERS  += mainwindow.h \
-    Point.h
+    Point.h \
+    Fast.h \
+    Brute.h
 
 OTHER_FILES +=

@@ -1,5 +1,4 @@
 #include "Point.h"
-#include <algorithm>
 #include <iostream>
 
 #define PI 3.1415926535897932384626433832795028831971 //less digit cause bugs when do comparison!!!!
